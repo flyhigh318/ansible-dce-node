@@ -1,12 +1,13 @@
-#操作须知
-##ansible-playbook包含4个role角色部份，功能如下：
+# 操作须知
+
+## ansible-playbook包含4个role角色部份，功能如下：
  - os_init: 优化系统脚本。
  - install_pexpect: 在节点部署python的pexpect模块。
  - install_osr: 部署docker、kubelet等。
  - join_node: 接入DCE集群。
  - join_dcei: 接入dce insight，如果容器化部署，忽略。
  
-##roles角色组成
+## roles角色组成
  roles/角色名称/{files,tasks,templates}
  - files： 放置文件、脚本之类。
  - tasks： 角色剧本的主任务程序。
