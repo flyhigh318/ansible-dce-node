@@ -1,0 +1,23 @@
+---
+  - name: create {{ dce_join_script_path }} script
+    template: 
+       src: node.j2
+       dest: "{{ dce_join_script_path }}"
+       mode: 0700
+
+  - name: show {{ dce_join_script_path }} script 
+    shell: |
+       ls -lh {{ dce_join_script_path }}
+       cat {{ dce_join_script_path }}
+    register: log
+  - debug: var=log.stdout_lines
+
+  - name: join to dce
+    expect:
+        command: /usr/local/bin/dce-installer
+        responses:
+         Web UI: pwd
+        timeout: 600
+    register: log
+  - debug: var=log.stdout_lines
+

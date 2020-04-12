@@ -1,0 +1,36 @@
+---
+  - name: create {{ osr_pkg_dir }}
+    shell: creates={{ osr_pkg_dir }}  mkdir -p {{ osr_pkg_dir }}
+
+  - name: download dce-{{ dce_ver }}.tar.gz  
+    get_url:
+      url: "http://{{ web_server_ip }}:{{ web_server_port}}/dce-{{ dce_ver }}.tar.gz"
+      dest: "{{ osr_pkg_dir }}/dce-{{ dce_ver }}.tar.gz"
+      timeout: 120
+
+  - name: unzip package dce-{{ dce_ver }}.tar.gz
+    unarchive: src={{ osr_pkg_dir }}/{{ item.name }}  dest={{ osr_pkg_dir }} copy=no
+    with_items:
+      - { name: "dce-{{ dce_ver }}.tar.gz" }
+
+  - name: change {{ osr_pkg_dir }}/dce-{{ dce_ver }}/os-requirements script can excute
+    file: path={{ osr_pkg_dir }}/dce-{{ dce_ver }}/{{ item.name }} owner=root group=root mode=0700
+    with_items:
+      - { name: 'os-requirements' }
+
+  - name: remove conflict package 
+    shell: yum remove -y {{ item.name }}
+    with_items:
+      - { name: "{{ remove_pkg }}" }
+    ignore_errors: yes
+
+  - name: run {{ osr_pkg_dir }}/dce-{{ dce_ver }}/os-requirements 
+    shell: |
+       export PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin:/root/bin
+       ./os-requirements install -d {{ disk_dev }} -y -q
+    args:
+       chdir: "{{ osr_pkg_dir }}/dce-{{ dce_ver }}"
+    register: log
+  - debug: var=log.stdout_lines
+
+

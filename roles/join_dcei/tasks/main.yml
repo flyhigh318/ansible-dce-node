@@ -1,0 +1,5 @@
+---
+  - name: join dcei-server  
+    script:  dcei-forwarder.sh {{ dcei_server_ip }}
+    register: log
+  - debug: var=log.stdout_lines

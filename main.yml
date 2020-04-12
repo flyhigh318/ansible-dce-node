@@ -1,0 +1,16 @@
+---
+- hosts: car_club_prod
+#- hosts: qitv2812
+  vars_files:
+#    - group_vars/install_pexpect
+#    - group_vars/os_init
+#    - group_vars/install_osr
+#    - group_vars/join_node
+    - group_vars/dce_config
+
+  roles:
+    - install_pexpect 
+    - os_init
+    - install_osr
+    - join_node
+    - join_dcei

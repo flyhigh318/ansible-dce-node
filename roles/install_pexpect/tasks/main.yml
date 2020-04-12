@@ -1,0 +1,31 @@
+---
+  - name: create {{ dest_pkg_dir }}
+    shell: creates={{ dest_pkg_dir }}  mkdir -p {{ dest_pkg_dir }}
+
+  - name: Copy python_pkg to {{ dest_pkg_dir }}
+    copy: src={{ item.name }}  dest={{ dest_pkg_dir }}
+    with_items:
+      - { name: 'setuptools-40.8.0.zip' }
+      - { name: 'pip-19.0.3.tar.gz' }
+      - { name: 'ptyprocess-0.6.0.tar.gz' }
+      - { name: 'pexpect-4.6.0.tar.gz' }
+      - { name: 'install_python_pkg.sh' }
+
+
+  - name: unzip package setuptool pip ptyprocess
+    unarchive: src={{ dest_pkg_dir }}/{{ item.name }}  dest={{ dest_pkg_dir }} copy=no
+    with_items:
+      - { name: 'setuptools-40.8.0.zip' }
+      - { name: 'pip-19.0.3.tar.gz' }
+      - { name: 'ptyprocess-0.6.0.tar.gz' }
+
+  - name: change script can excute
+    file: path={{ item.path }}/{{ item.name }} owner=root group=root mode=0700
+    with_items:
+      - { path: "{{ dest_pkg_dir }}", name: "install_python_pkg.sh" }
+
+  - name: install python setuptool, pip, ptyprocess, pexpect
+    shell: chdir={{ dest_pkg_dir }}  {{ dest_pkg_dir }}/install_python_pkg.sh
+    register: log
+  - debug: var=log.stdout_lines
+

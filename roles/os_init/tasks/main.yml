@@ -1,0 +1,31 @@
+---
+  - name: create {{ os_pkg_dir }}
+    shell: creates={{ os_pkg_dir }}  mkdir -p {{ os_pkg_dir }}
+
+  - name: Copy scripts to {{ os_pkg_dir }}
+    copy: src={{ item.name }}  dest={{ os_pkg_dir }} force=yes
+    with_items:
+      - { name: 'adjust_os.sh' }
+      - { name: 'check_disk.sh' }
+
+  - name: change {{ os_pkg_dir }} script can excute
+    file: path={{ os_pkg_dir }}/{{ item.name }} owner=root group=root mode=0700
+    with_items:
+      - { name: 'adjust_os.sh' }
+      - { name: 'check_disk.sh' }
+
+  - name: run {{ os_pkg_dir }}/adjust_os.sh 
+    script: chdir={{ os_pkg_dir }}  adjust_os.sh
+    register: log
+  - debug: var=log.stdout_lines
+
+  - name: run {{ os_pkg_dir }}/check_disk.sh 
+    shell: chdir={{ os_pkg_dir }}  {{ os_pkg_dir }}/check_disk.sh {{ disk_dev }}
+    register: log
+  - debug: var=log.stdout_lines
+
+#  - name: test ansible vars  
+#    shell: |
+#      echo "{{ hostvars[inventory_hostname]['ansible_env'].SSH_CONNECTION.split(' ')[2] }}"
+#    register: log
+#  - debug: var=log.stdout_lines

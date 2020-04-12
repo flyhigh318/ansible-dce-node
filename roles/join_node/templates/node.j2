@@ -1,0 +1,5 @@
+#!/bin/bash
+
+export PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin:/root/bin
+
+sudo bash -c "$(docker run --rm -i -v /var/run/docker.sock:/var/run/docker.sock {{ dce_image_ip }}/kube-system/dce:{{ dce_ver }} join --controller-addr {{ dce_controller_addr }} --management-advertise-addr {{ hostvars[inventory_hostname]['ansible_env'].SSH_CONNECTION.split(' ')[2] }} -q )"
